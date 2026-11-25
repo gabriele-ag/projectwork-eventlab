@@ -3,6 +3,8 @@ package com.eventlab.event_service.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 @Entity
 @Table(name = "events")
@@ -11,23 +13,29 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     private String title;
     private String description;
-    private LocalDateTime event_date;
+    // private LocalDateTime event_date;
     private String location;
-    private Integer max_seats;
+    // private Integer max_seats;
+
+    @JsonProperty("event_date")
+private LocalDateTime event_date;
+
+@JsonProperty("max_seats")
+private Integer max_seats;
 
     public Event() {
 
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,12 +55,12 @@ public class Event {
         this.description = description;
     }
 
-    public LocalDateTime getEvent_date() {
+    public LocalDateTime getEventDate() {
         return event_date;
     }
 
-    public void setEvent_date(LocalDateTime event_date) {
-        this.event_date = event_date;
+    public void setEventDate(LocalDateTime eventdate) {
+        this.event_date = eventdate;
     }
 
     public String getLocation() {
@@ -63,12 +71,12 @@ public class Event {
         this.location = location;
     }
 
-    public Integer getMax_seats() {
+    public Integer getMaxSeats() {
         return max_seats;
     }
 
-    public void setMax_seats(Integer max_seats) {
-        this.max_seats = max_seats;
+    public void setMaxSeats(Integer maxseats) {
+        this.max_seats = maxseats;
     }
 
     
