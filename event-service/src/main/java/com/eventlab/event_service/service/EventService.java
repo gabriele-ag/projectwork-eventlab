@@ -2,9 +2,11 @@ package com.eventlab.event_service.service;
 
 import com.eventlab.event_service.dto.EventDTO;
 import com.eventlab.event_service.entity.Event;
+import com.eventlab.event_service.exception.EventNotFoundException;
 import com.eventlab.event_service.repository.EventRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ public class EventService {
         return toDTO(event);
     }
 
+    @Transactional
     public EventDTO createEvent(EventDTO dto) {
         validateEventDTO(dto);
         Event entity = toEntity(dto);
@@ -38,6 +41,7 @@ public class EventService {
         return toDTO(saved);
     }
 
+    @Transactional
     public EventDTO updateEvent(Long id, EventDTO dto) {
         Event existing = findEventOrThrow(id);
         validateEventDTO(dto);
@@ -54,9 +58,7 @@ public class EventService {
 
     private Event findEventOrThrow(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Evento con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new EventNotFoundException(id));
     }
 
     private void validateEventDTO(EventDTO dto) {

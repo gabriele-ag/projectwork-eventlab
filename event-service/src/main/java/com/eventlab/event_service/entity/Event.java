@@ -68,7 +68,7 @@ public class Event {
 
     public void setMaxSeats(Integer maxseats) {
         this.max_seats = maxseats;
-    }
+    } 
 
 
 }
