@@ -15,6 +15,16 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleEventNotFound(EventNotFoundException ex) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(NoSeatsAvailableException.class)
+    public ResponseEntity<Map<String, Object>> handleNoSeatsAvailable(NoSeatsAvailableException ex) {
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
         HttpStatus status = HttpStatus.resolve(ex.getStatusCode().value());

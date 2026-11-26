@@ -2,9 +2,12 @@ package com.eventlab.event_service.service;
 
 import com.eventlab.event_service.dto.EventDTO;
 import com.eventlab.event_service.entity.Event;
+import com.eventlab.event_service.exception.EventNotFoundException;
+import com.eventlab.event_service.exception.NoSeatsAvailableException;
 import com.eventlab.event_service.repository.EventRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -31,32 +34,69 @@ public class EventService {
         return toDTO(event);
     }
 
+    @Transactional
     public EventDTO createEvent(EventDTO dto) {
         validateEventDTO(dto);
         Event entity = toEntity(dto);
+        entity.setAvailableSeats(entity.getMaxSeats());
         Event saved = eventRepository.save(entity);
         return toDTO(saved);
     }
 
+    @Transactional
     public EventDTO updateEvent(Long id, EventDTO dto) {
         Event existing = findEventOrThrow(id);
         validateEventDTO(dto);
+
+        int currentAvailable = existing.getAvailableSeats() != null ? existing.getAvailableSeats() : existing.getMaxSeats();
+        int bookedSeats = existing.getMaxSeats() - currentAvailable;
+        if (dto.getMaxSeats() < bookedSeats) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La capienza massima non può essere inferiore ai posti già prenotati (" + bookedSeats + ")"
+            );
+        }
 
         existing.setTitle(dto.getTitle().trim());
         existing.setDescription(normalizeDescription(dto.getDescription()));
         existing.setEventDate(dto.getEventDate());
         existing.setLocation(dto.getLocation().trim());
         existing.setMaxSeats(dto.getMaxSeats());
+        existing.setAvailableSeats(dto.getMaxSeats() - bookedSeats);
 
         Event updated = eventRepository.save(existing);
         return toDTO(updated);
     }
 
+    @Transactional
+    public EventDTO reserveSeat(Long eventId) {
+        Event event = findEventOrThrow(eventId);
+
+        if (event.getAvailableSeats() == null || event.getAvailableSeats() <= 0) {
+            throw new NoSeatsAvailableException(eventId);
+        }
+
+        event.setAvailableSeats(event.getAvailableSeats() - 1);
+        Event updated = eventRepository.save(event);
+        return toDTO(updated);
+    }
+
+    @Transactional
+    public EventDTO releaseSeat(Long eventId) {
+        Event event = findEventOrThrow(eventId);
+
+        int currentAvailable = event.getAvailableSeats() != null ? event.getAvailableSeats() : 0;
+        if (currentAvailable < event.getMaxSeats()) {
+            event.setAvailableSeats(currentAvailable + 1);
+        }
+
+        Event updated = eventRepository.save(event);
+        return toDTO(updated);
+    }
+
     private Event findEventOrThrow(Long id) {
         return eventRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Evento con id " + id + " non trovato"
-                ));
+                .orElseThrow(() -> new EventNotFoundException(id));
     }
 
     private void validateEventDTO(EventDTO dto) {
@@ -96,6 +136,7 @@ public class EventService {
         dto.setEventDate(event.getEventDate());
         dto.setLocation(event.getLocation());
         dto.setMaxSeats(event.getMaxSeats());
+        dto.setAvailableSeats(event.getAvailableSeats());
         return dto;
     }
 
