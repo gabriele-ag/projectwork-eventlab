@@ -22,10 +22,10 @@ public class Event {
     // private Integer max_seats;
 
     @JsonProperty("event_date")
-private LocalDateTime event_date;
+        private LocalDateTime event_date;
 
-@JsonProperty("max_seats")
-private Integer max_seats;
+    @JsonProperty("max_seats")
+        private Integer max_seats;
 
     public Event() {
 
