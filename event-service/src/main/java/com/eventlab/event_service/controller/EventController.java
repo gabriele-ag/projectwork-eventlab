@@ -1,46 +1,42 @@
 package com.eventlab.event_service.controller;
 
+import com.eventlab.event_service.dto.EventDTO;
+import com.eventlab.event_service.service.EventService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.eventlab.event_service.entity.Event;
-import com.eventlab.event_service.service.EventService;
-
-
-@RestController 
+@RestController
 @RequestMapping("/api/events")
 public class EventController {
-    
-    public final EventService eventService;
+
+    private final EventService eventService;
 
     public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
-    @GetMapping("")
-    List<Event> getAllEvents() {
-        return eventService.getAllEvents();
+    @GetMapping
+    public ResponseEntity<List<EventDTO>> getAllEvents() {
+        return ResponseEntity.ok(eventService.getAllEvents());
     }
 
     @GetMapping("/{id}")
-    Event getEventById(@PathVariable Long id) {
-        return eventService.getById(id);
-    }
-    
-    @PostMapping("/add")
-    Event addEvent(@RequestBody Event eventToAdd) {      
-        return eventService.add(eventToAdd);
+    public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
+        return ResponseEntity.ok(eventService.getEventById(id));
     }
 
-    @PostMapping("/{id}")
-    Event updateEvent(@PathVariable Long id, @RequestBody Event eventToUpdate) {       
-        return eventService.update(id, eventToUpdate);
+    @PostMapping
+    public ResponseEntity<EventDTO> createEvent(@RequestBody EventDTO dto) {
+        EventDTO created = eventService.createEvent(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
-            
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventDTO> updateEvent(@PathVariable Long id, @RequestBody EventDTO dto) {
+        EventDTO updated = eventService.updateEvent(id, dto);
+        return ResponseEntity.ok(updated);
+    }
 }

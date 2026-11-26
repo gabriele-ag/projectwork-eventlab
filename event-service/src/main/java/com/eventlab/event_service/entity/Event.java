@@ -3,9 +3,6 @@ package com.eventlab.event_service.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-
 @Entity
 @Table(name = "events")
 
@@ -17,9 +14,7 @@ public class Event {
 
     private String title;
     private String description;
-    // private LocalDateTime event_date;
     private String location;
-    // private Integer max_seats;
     private LocalDateTime event_date;
     private Integer max_seats;
 
@@ -74,11 +69,6 @@ public class Event {
     public void setMaxSeats(Integer maxseats) {
         this.max_seats = maxseats;
     }
-
-    
-
-
-
 
 
 }

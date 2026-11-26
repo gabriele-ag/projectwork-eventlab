@@ -1,15 +1,16 @@
 package com.eventlab.event_service.service;
 
-import java.util.List;
-import java.time.LocalDateTime;
-
+import com.eventlab.event_service.dto.EventDTO;
 import com.eventlab.event_service.entity.Event;
 import com.eventlab.event_service.repository.EventRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-@Service 
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
 public class EventService {
 
     private final EventRepository eventRepository;
@@ -18,83 +19,93 @@ public class EventService {
         this.eventRepository = eventRepository;
     }
 
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public List<EventDTO> getAllEvents() {
+        return eventRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
     }
 
-    public Event getById(Long id) {
+    public EventDTO getEventById(Long id) {
+        Event event = findEventOrThrow(id);
+        return toDTO(event);
+    }
 
-        Event eventById = eventRepository.findById(id).orElse(null);
+    public EventDTO createEvent(EventDTO dto) {
+        validateEventDTO(dto);
+        Event entity = toEntity(dto);
+        Event saved = eventRepository.save(entity);
+        return toDTO(saved);
+    }
 
-        if (eventById == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evento con Id" + id + "non trovato. Riprovare");
+    public EventDTO updateEvent(Long id, EventDTO dto) {
+        Event existing = findEventOrThrow(id);
+        validateEventDTO(dto);
+
+        existing.setTitle(dto.getTitle().trim());
+        existing.setDescription(normalizeDescription(dto.getDescription()));
+        existing.setEventDate(dto.getEventDate());
+        existing.setLocation(dto.getLocation().trim());
+        existing.setMaxSeats(dto.getMaxSeats());
+
+        Event updated = eventRepository.save(existing);
+        return toDTO(updated);
+    }
+
+    private Event findEventOrThrow(Long id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Evento con id " + id + " non trovato"
+                ));
+    }
+
+    private void validateEventDTO(EventDTO dto) {
+        if (dto == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dati evento mancanti");
         }
-
-        return eventById;
-
+        if (dto.getTitle() == null || dto.getTitle().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il titolo è obbligatorio");
+        }
+        if (dto.getTitle().trim().length() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il titolo non può superare i 100 caratteri");
+        }
+        if (dto.getEventDate() == null || !dto.getEventDate().isAfter(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La data dell'evento deve essere futura");
+        }
+        if (dto.getLocation() == null || dto.getLocation().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il luogo è obbligatorio");
+        }
+        if (dto.getMaxSeats() == null || dto.getMaxSeats() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La capienza massima deve essere maggiore di zero");
+        }
     }
 
-    public Event add(Event event) {
-        validateEvent(event);
-
-        Event eventToSave = new Event();
-        eventToSave.setTitle(event.getTitle().trim());
-        eventToSave.setDescription(eventDescription(event.getDescription()));
-        eventToSave.setEventDate(event.getEventDate());
-        eventToSave.setLocation(event.getLocation().trim());
-        eventToSave.setMaxSeats(event.getMaxSeats());
-
-        return eventRepository.save(eventToSave);
-    }
-
-    public Event update(Long id, Event updatedEvent) {
-        validateEvent(updatedEvent);
-
-        Event eventToUpdate = getById(id);
-        eventToUpdate.setTitle(updatedEvent.getTitle().trim());
-        eventToUpdate.setDescription(eventDescription(updatedEvent.getDescription()));
-        eventToUpdate.setEventDate(updatedEvent.getEventDate());
-        eventToUpdate.setLocation(updatedEvent.getLocation().trim());
-        eventToUpdate.setMaxSeats(updatedEvent.getMaxSeats());
-
-        return eventRepository.save(eventToUpdate);
-
-    }
-
-    public String eventDescription(String description) {
+    private String normalizeDescription(String description) {
         if (description == null) {
             return null;
         }
-
-        return description.trim().isEmpty() ? null : description.trim();
+        String trimmed = description.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 
-    private void validateEvent(Event event) {
+    private EventDTO toDTO(Event event) {
+        EventDTO dto = new EventDTO();
+        dto.setId(event.getId());
+        dto.setTitle(event.getTitle());
+        dto.setDescription(event.getDescription());
+        dto.setEventDate(event.getEventDate());
+        dto.setLocation(event.getLocation());
+        dto.setMaxSeats(event.getMaxSeats());
+        return dto;
+    }
 
-        // Gestione del null
-        if (event == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dati mancanti dell'evento");
-        }
-
-        //validazione su title
-        if (event.getTitle() == null || event.getTitle().isBlank() || event.getTitle().trim().length() > 255) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il titolo è obbligatorio e deve essere al massimo di 255 caratteri."); 
-        }
-
-        //validazione su location
-        if (event.getLocation() == null || event.getLocation().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Il luogo è obbligatorio");
-        }
-
-        //validazione su event_date
-        if (event.getEventDate() == null || !event.getEventDate().isAfter(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La data dell'evento deve essere futura.");
-        }
-
-        //validazione su max_seats
-        if (event.getMaxSeats() == null || event.getMaxSeats() <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La capienza massima deve essere maggiore di zero");
-        }
-
+    private Event toEntity(EventDTO dto) {
+        Event event = new Event();
+        event.setTitle(dto.getTitle().trim());
+        event.setDescription(normalizeDescription(dto.getDescription()));
+        event.setEventDate(dto.getEventDate());
+        event.setLocation(dto.getLocation().trim());
+        event.setMaxSeats(dto.getMaxSeats());
+        return event;
     }
 }
