@@ -17,7 +17,6 @@ public class Event {
     private String location;
     private LocalDateTime event_date;
     private Integer max_seats;
-    private Integer availableSeats;
 
     public Event() {
 
@@ -70,14 +69,6 @@ public class Event {
     public void setMaxSeats(Integer maxseats) {
         this.max_seats = maxseats;
     } 
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
 
 
 }

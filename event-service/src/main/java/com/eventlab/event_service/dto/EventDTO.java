@@ -10,7 +10,6 @@ public class EventDTO {
     private LocalDateTime eventDate;
     private String location;
     private Integer maxSeats;
-    private Integer availableSeats;
 
     public EventDTO() {
     }
@@ -70,13 +69,5 @@ public class EventDTO {
 
     public void setMaxSeats(Integer maxSeats) {
         this.maxSeats = maxSeats;
-    }
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
     }
 }

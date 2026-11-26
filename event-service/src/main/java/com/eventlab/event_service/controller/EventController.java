@@ -39,14 +39,4 @@ public class EventController {
         EventDTO updated = eventService.updateEvent(id, dto);
         return ResponseEntity.ok(updated);
     }
-
-    @PostMapping("/{id}/reserve")
-    public ResponseEntity<EventDTO> reserveSeat(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.reserveSeat(id));
-    }
-
-    @PostMapping("/{id}/release")
-    public ResponseEntity<EventDTO> releaseSeat(@PathVariable Long id) {
-        return ResponseEntity.ok(eventService.releaseSeat(id));
-    }
 }
