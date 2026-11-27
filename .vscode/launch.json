@@ -9,6 +9,16 @@
       "projectName": "event-service",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-BookingServiceApplication<booking-service>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.eventlab.booking_service.BookingServiceApplication",
+      "projectName": "booking-service",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
