@@ -6,10 +6,61 @@
 
 body {
     font-family: "Roboto", sans-serif;
+    background-color: antiquewhite;
+}
+
+/* Utility */
+
+.container {
+    max-width: 80%;
+    margin: auto;
+    padding: 0;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
 }
 
 
 /* HEADER */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(231, 201, 162);
+    padding: 15px 20px;
+}
+
 .title {
     font-size: 40px;
+}
+
+/* MAIN */
+
+.sectionMain {
+    padding-top: 50px;
+}
+
+/* ELENCO EVENTI */
+
+.eventsBox {
+    /* Aggiungere dopo */
+}
+
+/* OPERATIONBOX */
+
+.operationBox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cardUser {
+    background-color: aqua;
+}
+
+.cardOperator {
+    background-color: rgb(106, 106, 211);
 }

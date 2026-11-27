@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
 
     <title>EventLab</title>
 </head>
@@ -14,20 +16,111 @@
 <body>
     <!-- HEADER -->
     <header>
-        <div>
-            <h1 class="title">EventLab</h1>
-        </div>
+        <h1 class="title">EventLab</h1>
+        <label for="" class="operatorMode">
+            <span>Modalità Operatore</span>
+            <input type="checkbox" id="operatorToggle">
+        </label>
     </header>
 
     <!-- MAIN -->
     <main>
+        <section class="sectionMain">
+        <!-- PRENOTAZIONE UTENTE -->
+            <div class="container">
+
+                <div class="flex">
+
+                    <!-- ELENCO EVENTI -->
+                    <div class="eventsBox">
+                        <div id="eventsList" class="events-grid"></div>
+                    </div>
+
+                    <!-- BOX PRENOTAZIONE E GESTIONE DA OPERATORE -->
+                    <div class="operationBox">
+
+                        <!-- PRENOTAZIONE UTENTE -->
+                        <div class="cardUser">
+
+                            <h2>Nuova Prenotazione</h2>
+                            
+                            <form id="bookingForm" class="form">
+                                <div class="form-group">
+                                    <label for="userName">Nome</label>
+                                    <input type="text" id="userName" name="userName" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="userEmail">E-mail</label>
+                                    <input type="email" id="userEmail" name="userEmail" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="bookingEventSelect">Evento</label>
+                                    <select id="bookingEventSelect" name="eventId" required>
+                                        <option value="">Seleziona Evento</option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" class="btn">Invia Prenotazione</button>
+                            </form>
+                        </div>
+
+                        <!-- OPERAZIONI OPERATORE -->
+                        <div class="cardOperator">
+
+                            <h2>Gestione Evento - Operatore</h2>
+
+                            <form id="createEventForm" class="form">
+                                <div class="form-group">
+                                    <label for="eventTitle">Titolo</label>
+                                    <input type="text" id="eventTitle" name="title" maxlength="100" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="eventDescription">Descrizione</label>
+                                    <input type="text" id="eventDescription" name="description">
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="eventDate">Data</label>
+                                    <input type="datetime-local" id="eventDate" name="eventDate" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="eventLocation">Luogo</label>
+                                    <input type="text" id="eventLocation" name="location" required>
+                                </div>
+                            
+                                <div class="form-group">
+                                    <label for="eventMaxSeats">Capienza</label>
+                                    <input type="number" id="eventMaxSeats" name="maxSeats" min="1" required>
+                                </div>
+                            
+                                <button type="submit" class="btn">Crea Evento</button>
+                            </form>
+                            
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- GESTIONE EVENTI OPERATORE -->
+            <div>
+
+            </div>
+        </section>
     </main>
 
     <!-- FOOTER -->
-    <footer>        
+    <footer>
+        <p>EventLab @Created by Gabriele Ardizzone & Giuseppe Berardi</p>
     </footer>
-    
-<script src="app.js"></script>
+
+    <script src="app.js"></script>
 </body>
 
 </html>
